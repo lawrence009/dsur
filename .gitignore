@@ -1,0 +1,13 @@
+#############
+## R Studio
+#############
+.Rproj.user
+.RData
+.Rhistory
+*_cache
+
+
+#############
+## Specific to this project
+#############
+images
