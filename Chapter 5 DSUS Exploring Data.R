@@ -18,7 +18,7 @@ if (!dir.exists(imgDir)) {
     dir.create(imgDir)
 }
 
-#----Install and Load Packages-----
+#-----Install and Load Packages------
 # install.packages("car")
 # install.packages("ggplot2")
 # install.packages("pastecs")
