@@ -27,7 +27,7 @@ library(ggplot2)
 library(boot)
 library(polycor)
 library(ggm)
-library(Rcmdr)
+#library(Rcmdr)
 
 #-----Entering data-----
 adverts <- c(5,4,4,6,8)
@@ -146,15 +146,16 @@ boot_spearman <-boot(examData2, bootRho, 2000)
 boot_spearman
 boot.ci(boot_spearman)
 
-bootRho<-function(examData2,i) cor(examData2$Revise[i], examData2$Exam[i], use = "complete.obs", method = "spearman")
+bootRho<-function(examData2, i) {
+    cor(examData2$Revise[i], examData2$Exam[i], use = "complete.obs", method = "spearman")
+}
 boot_spearman <-boot(examData2, bootRho, 2000)
 boot_spearman
 boot.ci(boot_spearman)
 
 
 
-#-------Point Biserial-----
-
+#----Point Biserial----
 catData <- read.csv("data/pbcorr.csv",  header = TRUE)
 cor.test(catData$time, catData$gender)
 cor.test(catData$time, catData$recode)
@@ -163,18 +164,19 @@ prop.table(catFrequencies)
 
 polyserial(catData$time, catData$gender)
 
-#-------Partial-----
-maleExam<-subset(examData, Gender == "Male", select= c("Exam", "Anxiety"))
-femaleExam<-subset(examData, Gender == "Female", select= c("Exam", "Anxiety"))
+
+#----Partial----
+maleExam   <- subset(examData, Gender == "Male",   select= c("Exam", "Anxiety"))
+femaleExam <- subset(examData, Gender == "Female", select= c("Exam", "Anxiety"))
 cor(maleExam)
 cor(femaleExam)
 
-pc<-pcor(c("Exam", "Anxiety", "Revise"), var(examData2))
+pc <- pcor(c("Exam", "Anxiety", "Revise"), var(examData2))
 pc
 pc^2
 pcor.test(pc, 1, 103)
 
-#-------Differences between independent rs-----
+#----Differences between independent rs----
 
 zdifference<-function(r1, r2, n1, n2) {
     zd <- (atanh(r1)-atanh(r2))/sqrt(1/(n1-3)+1/(n2-3))
@@ -187,13 +189,13 @@ zdifference(-0.506, -0.381, 52, 51)
 
 #-------Differences between dependent rs-----
 
-tdifference<-function(rxy, rxz, rzy, n)
-{	df<-n-3
+tdifference<-function(rxy, rxz, rzy, n) {
+    df<-n-3
 	td<-(rxy-rzy)*sqrt((df*(1 + rxz))/(2*(1-rxy^2-rxz^2-rzy^2+(2*rxy*rxz*rzy))))
 	p <-pt(td, df)
 	print(paste("t Difference: ", td))
 	print(paste("One-Tailed P-Value: ", p))
-	}
+}
 
 tdifference(-0.441, -0.709, 0.397, 103)
 
