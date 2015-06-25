@@ -10,9 +10,7 @@
 #-------------------------------------------------------------------------------
 
 #-----Set and create the directories-----
-
-wd <- getwd()
-imgDir <- file.path(wd, 'images')
+imgDir <- file.path(getwd(), 'images')
 
 if (!dir.exists(imgDir)) {
     dir.create(imgDir)
