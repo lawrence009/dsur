@@ -1,29 +1,31 @@
-#---------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 #R Code for Chapter 3 of:
 #
-#Field, A. P., Miles, J. N. V., & Field, Z. C. (2012). Discovering Statistics Using R: and Sex and Drugs and Rock 'N' Roll. #London Sage
+#Field, A. P., Miles, J. N. V., & Field, Z. C. (2012). Discovering Statistics
+#Using R: and Sex and Drugs and Rock 'N' Roll.
+#
+#London Sage
 #
 #(c) 2011 Andy P. Field, Jeremy N. V. Miles & Zoe C. Field
 #-----------------------------------------------------------------------------------------------------------
 
 
 
-install.packages("foreign")
-install.packages("Hmisc")
-install.packages("Rcmdr", dependencies = TRUE)
-install.packages("reshape")
+# install.packages("foreign")
+# install.packages("Hmisc")
+# install.packages("Rcmdr", dependencies = TRUE)
+# install.packages("reshape2")
 
-library(forign)
+library(foreign)
 library(Rcmdr)
-library(reshape)
+library(reshape2)
 
-setwd("~/Public/Academic/Data/DSU_R/Chapter 03 (The R Environment)")
-setwd("~/Documents/Academic/Data/DSU_R/Chapter 03 (The R Environment)")
+
 
 #-----------Metallica Data---------------------------------------------------------------------------
 
 metallica<-c("lars", "james", "Jason", "Kirk")
-metallica 
+metallica
 metallica<-metallica[metallica != "Jason"]
 metallica
 metallica<-c(metallica, "Rob")
@@ -62,7 +64,7 @@ lecturerData<-data.frame(name, birth_date, job, friends, alcohol,income, neuroti
 #--------R souls tip 3.5-----------
 husband<-c("1973-06-21", "1970-07-16", "1949-10-08", "1969-05-24")
 wife<-c("1984-11-12", "1973-08-02", "1948-11-11", "1983-07-23")
-agegap <- husband-wife
+#agegap <- husband-wife
 husband<-as.Date(c("1973-06-21", "1970-07-16", "1949-10-08", "1969-05-24"))
 wife<-as.Date(c("1984-11-12", "1973-08-02", "1948-11-11", "1983-07-23"))
 agegap <- husband-wife
@@ -71,24 +73,27 @@ agegap
 
 
 #--------Importing files-----------
+lecturerData <- read.delim("data/Lecturer Data.dat", header = TRUE)
+lecturerData$job <- factor(lecturerData$job,
+                           levels = c(1:2),
+                           labels = c("Lecturer", "Student"))
 
-lecturerData<-read.csv("Lecturer Data.csv", header = TRUE)
-lecturerData$job<-factor(lecturerData$job, levels = c(1:2), labels = c("Lecturer", "Student"))
-
-lecturerData<-read.delim("Lecturer Data.dat", header = TRUE)
-lecturerData<-read.delim("Lecturer Data.txt", header = TRUE)
-
-library(foreign)
-lecturerData<- read.spss("Lecturer Data.sav",use.value.labels=TRUE, to.data.frame=TRUE)
-lecturerData$birth_date <- as.Date(as.POSIXct(lecturerData$birth_date , origin="1582-10-14"))
+#library(foreign)
+#lecturerData<- read.spss("Lecturer Data.sav",use.value.labels=TRUE, to.data.frame=TRUE)
+#lecturerData$birth_date <- as.Date(as.POSIXct(lecturerData$birth_date , origin="1582-10-14"))
 
 #--------Exporting files-----------
-write.table(metallica, "Metallica Data.txt", sep="\t", row.names = FALSE)
-write.csv(metallica, "Metallica Data.csv")
+write.table(metallica, "data/Metallica Data.txt", sep="\t", row.names = FALSE)
+write.csv(metallica, "data/Metallica Data.csv")
 
+#----Smart Alex Task 1----
+write.table(lecturerData, "data/Lecturer Data.txt", sep="\t", row.names = FALSE)
+write.csv(lecturerData, "data/Lecturer Data.csv")
+
+lecturerData <- read.csv("data/Lecturer Data.csv", header = TRUE)
+lecturerData <- read.delim("data/Lecturer Data.txt", header = TRUE)
 
 #--------Selecting Data-----------
-
 lecturerPersonality <- lecturerData[, c("friends", "alcohol", "neurotic")]
 lecturerPersonality
 lecturerOnly <- lecturerData[job=="Lecturer",]
@@ -102,7 +107,6 @@ alcoholPersonalityMatrix <- as.matrix(lecturerData[alcohol > 10, c("friends", "a
 
 
 #--------Subset-----------
-
 lecturerOnly <- subset(lecturerData, job=="Lecturer")
 alcoholPersonality <- subset(lecturerData, alcohol > 10, select = c("friends", "alcohol", "neurotic"))
 
@@ -117,26 +121,20 @@ neuroticOrAlcoholic <- lecturerData[alcohol>=20|neurotic > 14,]
 neuroticOrAlcoholic <- subset(lecturerData, alcohol>=20|neurotic > 14)
 
 #--------Restructuring Data-----------
+satisfactionData <- read.delim("data/Honeymoon Period.dat",  header = TRUE)
+satisfactionStacked <- stack(satisfactionData, select = c("Satisfaction_Base", "Satisfaction_6_Months", "Satisfaction_12_Months", "Satisfaction_18_Months"))
+satisfactionUnstacked <- unstack(satisfactionStacked, values~ind)
 
-satisfactionData = read.delim("Honeymoon Period.dat",  header = TRUE)
-satisfactionStacked<-stack(satisfactionData, select = c("Satisfaction_Base", "Satisfaction_6_Months", "Satisfaction_12_Months", "Satisfaction_18_Months"))
-satisfactionUnstacked<-unstack(satisfactionStacked, values~ind)
+restructuredData <- reshape(satisfactionData, idvar = c("Person", "Gender"), varying = c("Satisfaction_Base", "Satisfaction_6_Months", "Satisfaction_12_Months", "Satisfaction_18_Months"), v.names = "Life_Satisfaction", timevar = "Time", times = c(0:3), direction = "long")
 
-restructuredData<-reshape(satisfactionData, idvar = c("Person", "Gender"), varying = c("Satisfaction_Base", "Satisfaction_6_Months", "Satisfaction_12_Months", "Satisfaction_18_Months"), v.names = "Life_Satisfaction", timevar = "Time", times = c(0:3), direction = "long")
+restructuredData.sorted <- restructuredData[order(restructuredData$Person),]
 
-restructuredData.sorted<-restructuredData[order(restructuredData$Person),]
+restructuredData <- melt(satisfactionData, id = c("Person", "Gender"), measured = c("Satisfaction_Base", "Satisfaction_6_Months", "Satisfaction_12_Months", "Satisfaction_18_Months"))
 
-restructuredData<-melt(satisfactionData, id = c("Person", "Gender"), measured = c("Satisfaction_Base", "Satisfaction_6_Months", "Satisfaction_12_Months", "Satisfaction_18_Months"))
-
-wideData<-cast(restructuredData, Person + Gender ~ variable, value = "value")
+wideData <- dcast(restructuredData, Person + Gender ~ variable, value = "value")
 
 
-----Smart Alex Task 1-------
-
-write.table(lecturerData, "Lecturer Data.txt", sep="\t", row.names = FALSE)
-write.csv(lecturerData, "Lecturer Data.csv")
-
-----Smart Alex Task 2-------
+#----Smart Alex Task 2----
 Method<-c(rep(1,10), rep(2,10))
 Method<-factor(Method, levels = c(1:2), labels = c("Electric Shock", "Being Nice"))
 Gender<-c(rep(0, 5),rep(1, 5), rep(0, 5),rep(1, 5))
@@ -144,15 +142,15 @@ Gender<-factor(Gender, levels = c(0:1), labels = c("Male", "Female"))
 Mark<-c(15,14,20,13,13,6,7,5,4,8,10,9,8,8,7,12,10,7,8,13)
 teachingMethodData<-data.frame(Method, Gender, Mark)
 teachingMethodData
-write.table(teachingMethodData, "teachingMethodData.txt", sep="\t", row.names=FALSE)
+write.table(teachingMethodData, "data/teachingMethodData.txt", sep="\t", row.names=FALSE)
 
-----Task 3-----
-Gender<-c(rep(0,12),rep(1,12)
+#----Smart Alex Task 3----
+Gender<-c(rep(0,12),rep(1,12))
 Gender<-factor(Gender,levels=c(0:1),labels=c("Male","Female"))
 Partner<-c(69,76,70,76,72,65,82,71,71,75,52,34,70,74,64,43,51,93,48,51,74,73,41,84)
 Self<-c(33,26,10,51,34,28,27,9,33,11,14,46,97,80,88,100,100,58,95,83,97,89,69,82)
-infidelityData<-data.frame(Gender, Partner, Self)
+infidelityData <- data.frame(Gender, Partner, Self)
 infidelityData
-write.csv(infidelityData, "Infidelity Data.csv")
+write.csv(infidelityData, "data/Infidelity Data.csv")
 
 
