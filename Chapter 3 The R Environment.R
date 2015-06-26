@@ -122,16 +122,36 @@ neuroticOrAlcoholic <- subset(lecturerData, alcohol>=20|neurotic > 14)
 
 #--------Restructuring Data-----------
 satisfactionData <- read.delim("data/Honeymoon Period.dat",  header = TRUE)
-satisfactionStacked <- stack(satisfactionData, select = c("Satisfaction_Base", "Satisfaction_6_Months", "Satisfaction_12_Months", "Satisfaction_18_Months"))
+satisfactionStacked <- stack(satisfactionData,
+                             select = c("Satisfaction_Base",
+                                        "Satisfaction_6_Months",
+                                        "Satisfaction_12_Months",
+                                        "Satisfaction_18_Months"))
 satisfactionUnstacked <- unstack(satisfactionStacked, values~ind)
 
-restructuredData <- reshape(satisfactionData, idvar = c("Person", "Gender"), varying = c("Satisfaction_Base", "Satisfaction_6_Months", "Satisfaction_12_Months", "Satisfaction_18_Months"), v.names = "Life_Satisfaction", timevar = "Time", times = c(0:3), direction = "long")
+restructuredData <- reshape(satisfactionData,
+                            idvar = c("Person", "Gender"),
+                            varying = c("Satisfaction_Base",
+                                        "Satisfaction_6_Months",
+                                        "Satisfaction_12_Months",
+                                        "Satisfaction_18_Months"),
+                            v.names = "Life_Satisfaction",
+                            timevar = "Time",
+                            times = c(0:3),
+                            direction = "long")
 
 restructuredData.sorted <- restructuredData[order(restructuredData$Person),]
 
-restructuredData <- melt(satisfactionData, id = c("Person", "Gender"), measured = c("Satisfaction_Base", "Satisfaction_6_Months", "Satisfaction_12_Months", "Satisfaction_18_Months"))
+restructuredData <- melt(satisfactionData,
+                         id = c("Person", "Gender"),
+                         measured = c("Satisfaction_Base",
+                                      "Satisfaction_6_Months",
+                                      "Satisfaction_12_Months",
+                                      "Satisfaction_18_Months"))
 
-wideData <- dcast(restructuredData, Person + Gender ~ variable, value = "value")
+wideData <- dcast(restructuredData,
+                  Person + Gender ~ variable,
+                  value.var = "value")
 
 
 #----Smart Alex Task 2----
