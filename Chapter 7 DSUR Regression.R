@@ -1,38 +1,34 @@
-#---------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 #R Code for Chapter 7 of:
 #
-#Field, A. P. & Miles, J. N. V. (2012). Discovering Statistics Using R: and Sex and Drugs and Rock 'N' Roll. London Sage
+#Field, A. P. & Miles, J. N. V. (2012). Discovering Statistics Using R: and Sex
+#and Drugs and Rock 'N' Roll. London Sage
 #
 #(c) 2011 Andy P. Field & Jeremy N. V. Miles
-#-----------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 
+#-----Set and create the directories-----
+imgDir <- file.path(getwd(), 'images')
+
+if (!dir.exists(imgDir)) {
+    dir.create(imgDir)
+}
 
 
-#----Set the working directory------
-setwd("~/Dropbox/Team Field/DSUR/DSUR_2/DSUR2 Data Files/Chapter 07 (Regression)")
-setwd("~/Documents/Academic/Data/DSU_R/Chapter 07 (Regression)")
-imageDirectory<-"~/Documents/Academic/Books/Discovering Statistics/DSU R/DSU R I/DSUR I Images"
+#-----Install and Load Packages------
+# install.packages("QuantPsyc")
+# install.packages("car")
 
-setwd("~/Public/Academic/Data/DSU_R/Chapter 07 (Regression)")
-imageDirectory<-"~/Public/Academic/Books/Discovering Statistics/DSU R/DSU R I/DSUR I Images"
-
-
-
-#----Install Packages-----
-install.packages("QuantPsyc")
-install.packages("car")
-
-
-#------And then load these packages, along with the boot package.-----
 library(QuantPsyc)
 library(car)
 library(boot)
-library(Rcmdr)
+library(ggplot2)
+#library(Rcmdr)
 
 
-#Jane superbrain box
-pubs<-read.delim("pubs.dat", header = TRUE)
+# Jane superbrain box -----------------------------------------------------
+pubs <- read.delim("data/pubs.dat", header = TRUE)
 pubReg <- lm(mortality ~ pubs, data = pubs)
 summary(pubReg)
 resid(pubReg)
@@ -41,35 +37,30 @@ rstudent(pubReg)
 
 PearsonResidual <- (resid(pubReg)-mean(resid(pubReg)))/sd(resid(pubReg))
 
-#----run the command to access the album1 data-----
-album1<-read.delim("Album Sales 1.dat", header = TRUE)
-
 #----run the simple linear regression model---
+album1 <- read.delim("data/Album Sales 1.dat", header = TRUE)
 albumSales.1 <- lm(sales ~ adverts, data = album1)
 summary(albumSales.1)
 sqrt(0.3346)
 
-#----access the album2 data----
-album2<-read.delim("Album Sales 2.dat", header = TRUE)
-
 
 #---Run the multiple regression model----
-albumSales.2<-lm(sales ~ adverts, data = album2)
-albumSales.3<-lm(sales ~ adverts + airplay + attract, data = album2)
+album2 <- read.delim("data/Album Sales 2.dat", header = TRUE)
+albumSales.2 <- lm(sales ~ adverts, data = album2)
+albumSales.3 <- lm(sales ~ adverts + airplay + attract, data = album2)
 summary(albumSales.2)
 summary(albumSales.3)
 
-#---We can obtain standardized parameter estimates with the lm.beta() function---
+#Obtain standardized parameter estimates with lm.beta() function
 lm.beta(albumSales.3)
-#---Confidence intervals are obtained with the confint() function----
+#Obtain confidence intervals with confint() function
 confint(albumSales.3)
 
-#----To compare the R2 in two models, use the ANOVA command---
+#To compare the R2 in two models, use the ANOVA command
 anova(albumSales.2, albumSales.3)
 
 
-#----Obtain casewise diagnostics and add them to the original data file.---
-
+#Obtain casewise diagnostics and add them to the original data file
 album2$residuals<-resid(albumSales.3)
 album2$standardized.residuals <- rstandard(albumSales.3)
 album2$studentized.residuals <- rstudent(albumSales.3)
@@ -80,7 +71,8 @@ album2$leverage <- hatvalues(albumSales.3)
 album2$covariance.ratios <- covratio(albumSales.3)
 
 #Save file
-write.table(album2, "Album Sales With Diagnostics.dat", sep = "\t", row.names = FALSE)
+write.table(album2, "data/Album Sales With Diagnostics.dat", sep = "\t", row.names = FALSE)
+
 #look at the data (and round the values)
 round(album2, digits = 3)
 
@@ -116,13 +108,12 @@ vif(albumSales.3)
 mean(vif(albumSales.3))
 
 
-#---Histogram of studentized residuals---
-
+#Histogram of studentized residuals
 hist(album2$studentized.residuals)
 hist(rstudent(albumSales.3))
 
-#--Plot of residuals against fitted (predicted) values, with a flat line at the mean--
-plot(albumSales.3$fitted.values,rstandard(albumSales.3))
+#Plot of residuals against fitted (predicted) values, with a flat line at the mean
+plot(albumSales.3$fitted.values, rstandard(albumSales.3))
 abline(0, 0)
 
 #same as above
@@ -132,38 +123,48 @@ plot(albumSales.3)
 
 album2$fitted <- albumSales.3$fitted.values
 
-histogram<-ggplot(album2, aes(studentized.residuals)) + opts(legend.position = "none") + geom_histogram(aes(y=..density..), colour="black", fill="white") + labs(x = "Studentized Residual", y = "Density")
-histogram + stat_function(fun = dnorm, args = list(mean = mean(album2$studentized.residuals, na.rm = TRUE), sd = sd(album2$studentized.residuals, na.rm = TRUE)), colour = "red", size = 1)
-ggsave(file = paste(imageDirectory,"07 album sales ggplot Hist.png",sep="/"))
+histogram <- ggplot(album2, aes(studentized.residuals)) +
+    theme(legend.position = "none") +
+    geom_histogram(aes(y=..density..), color="black", fill="white") +
+    labs(x = "Studentized Residual", y = "Density")
+histogram + stat_function(fun = dnorm,
+                          args = list(mean = mean(album2$studentized.residuals, na.rm = TRUE),
+                                      sd = sd(album2$studentized.residuals, na.rm = TRUE)),
+                          color = "red", size = 1)
+ggsave(file.path(imgDir, "07 album sales ggplot Hist.png"))
 
 scatter <- ggplot(album2, aes(fitted, studentized.residuals))
-scatter + geom_point() + geom_smooth(method = "lm", colour = "Red")+ labs(x = "Fitted Values", y = "Studentized Residual") 
-ggsave(file=paste(imageDirectory,"07 Album sales ggplot scatter.png",sep="/"))
+scatter + geom_point() + geom_smooth(method = "lm", colour = "Red") +
+    labs(x = "Fitted Values", y = "Studentized Residual")
+ggsave(file.path(imgDir, "07 Album sales ggplot scatter.png"))
 
-qqplot.resid <- qplot(sample = album2$studentized.residuals, stat="qq") + labs(x = "Theoretical Values", y = "Observed Values") 
+qqplot.resid <- qplot(sample = album2$studentized.residuals, stat="qq") +
+    labs(x = "Theoretical Values", y = "Observed Values")
 qqplot.resid
-ggsave(file=paste(imageDirectory,"07 Album sales ggplot QQ.png",sep="/"))
+ggsave(file.path(imgDir, "07 Album sales ggplot QQ.png"))
 
 
-#---R tends to give values to too many decimal places, you can usefully round these values to 2 decimals.
+#R tends to give values to too many decimal places, you can usefully round these
+#values to 2 decimals.
 round(rstandard(albumSales.3), 2)
 
 
 
-##------Bootstrapping------
-#---Write a bootstrap function.
-object<-boot(data,function,replications)
+# Bootstrapping ----
+# Write a bootstrap function
+# object <- boot(data, function, replications)
 
-
-bootReg<-function(formula, data, i)
-{
-	d <- data[i,]
-	fit <- lm(formula, data = d)
-	return(coef(fit))
-	}
+bootReg <- function(formula, data, i){
+    d <- data[i,]
+    fit <- lm(formula, data = d)
+    return(coef(fit))
+}
 
 #----bootstrapping our regression model, with 2000 replications---
-bootResults<-boot(statistic = bootReg, formula = sales ~ adverts + airplay + attract, data = album2, R = 2000,)
+bootResults <- boot(statistic = bootReg,
+                    formula = sales ~ adverts + airplay + attract,
+                    data = album2,
+                    R = 2000)
 
 #---We can then obtaine the bootstrap confidence intervals for the intercept:---
 boot.ci(bootResults, type = "bca", index = 1)
@@ -174,7 +175,7 @@ boot.ci(bootResults, type = "bca", index = 3)
 boot.ci(bootResults, type = "bca", index = 4)
 
 #-----Read in data for Glastonbury Festival Regression----
-gfr<-read.delim(file="GlastonburyFestivalRegression.dat", header = TRUE)
+gfr <- read.delim(file="data/GlastonburyFestivalRegression.dat", header = TRUE)
 
 #Print the first 10 cases of the dataframe
 head(gfr, n = 10)
@@ -190,7 +191,7 @@ contrasts(gfr$music)<-cbind(crusty_v_NMA, indie_v_NMA, metal_v_NMA)
 
 
 #----Exactly the same results can be obtained with------
-glastonburyModel<-lm(change ~ music, data = gfr) 
+glastonburyModel<-lm(change ~ music, data = gfr)
 summary(glastonburyModel)
 
 
@@ -202,10 +203,12 @@ round(tapply(gfr$change, gfr$music, mean, na.rm=TRUE), 3)
 
 #Load data & set gender to be a factor
 
-PersonalityData<-read.delim("Chamorro-Premuzic.dat", header = TRUE)
-PersonalityData$Gender<-factor(PersonalityData$Gender, levels = c(0:1), labels = c("Female", "Male"))
+PersonalityData <- read.delim("data/Chamorro-Premuzic.dat", header = TRUE)
+#PersonalityData$Gender <- factor(PersonalityData$Gender, levels = c(0:1),
+#                                 labels = c("Female", "Male"))
 
-#Create dataframes containing variables for each analysis (need to do this because of missing values). Drop variables not in analysis
+#Create dataframes containing variables for each analysis (need to do this
+#because of missing values). Drop variables not in analysis
 dropVars<-names(PersonalityData) %in% c("lecturerE","lecturerO", "lecturerA", "lecturerC")
 neuroticLecturer<-PersonalityData[!dropVars]
 
@@ -228,30 +231,34 @@ openLecturer <-openLecturer[complete.cases(openLecturer),]
 agreeLecturer <-agreeLecturer[complete.cases(agreeLecturer),]
 concLecturer <-concLecturer[complete.cases(concLecturer),]
 
-#-----Neurotic Lecturer-----------
-#-----Create two models-------
+# Neurotic Lecturer -------------------------------------------------------
+#Create two models
 LecturerN.1<- lm(lecturerN ~ Age + Gender, data= neuroticLecturer)
 LecturerN.2 <- lm(lecturerN ~ Age + Gender + studentN + studentE + studentO + studentA + studentC, data= neuroticLecturer)
-#-----Run an anova to compare the two models------
+
+#Run an anova to compare the two models
 anova(LecturerN.1, LecturerN.2)
-#-----To obtain output----
+
+#Obtain output
 summary(LecturerN.1)
 summary(LecturerN.2)
-#----Statistics------
+
+#Statistics
 vif(LecturerN.2)
 dwt(LecturerN.2)
 
-#---Histogram-----
+#Histogram
 hist(rstudent(LecturerN.2))
 
-#-----Confidence intervals-----
+#Confidence intervals
 confint(LecturerN.2)
 
-##-----obtain the standardized beta estimates:------
-install.packages("QuantPsyc")
-Library(QuantPsyc)
+#Obtain the standardized beta estimates
+#install.packages("QuantPsyc")
+#library(QuantPsyc)
 lm.beta(LecturerN.1)
 lm.beta(LecturerN.2)
+
 #-----Extroverted Lecturer-----------
 #----Create two models-------
 LecturerE.1 <- lm(lecturerE ~ Age + Gender, data=extroLecturer)
@@ -272,8 +279,8 @@ hist(rstudent(LecturerE.2))
 confint(LecturerE.2)
 
 ##-----obtain the standardized beta estimates:------
-install.packages("QuantPsyc")
-Library(QuantPsyc)
+# install.packages("QuantPsyc")
+# library(QuantPsyc)
 lm.beta(LecturerE.1)
 lm.beta(LecturerE.2)
 #-----Openness to Experience Lecturer-----------
@@ -352,7 +359,7 @@ lm.beta(LecturerC.2)
 #---Task 1------
 #load in the pubs.dat data:
 
-pubs<-read.delim("pubs.dat", header = TRUE)
+pubs<-read.delim("data/pubs.dat", header = TRUE)
 
 #create a regression model to predict mortality from number of pubs:
 
@@ -375,9 +382,9 @@ boot.ci(bootResults, type = "bca", index = 2)
 
 #---Task 2------
 
-#load in the Supermodel.dat data--
-
-Supermodel<-read.delim("Supermodel.dat", header = TRUE)
+#load in the Supermodel.dat data
+Supermodel<-read.table("data/Supermodel.dat", header = TRUE)
+names(Supermodel) <- tolower(names(Supermodel))
 
 #----create a regression model to predict salery from Age, number of years being a supermodel and beauty-----
 Supermodel.1 <- lm(salary~age + beauty + years, data= Supermodel)
@@ -400,7 +407,7 @@ rstandard(Supermodel.1)
 #----Histogram-----
 hist(rstandard(Supermodel.1))
 
-##---Plot of the standardized residuals----- 
+##---Plot of the standardized residuals-----
 plot(Supermodel.1$fitted.values,rstandard(Supermodel.1))
 
 #---It also helps to add a horizontal line at the mean--
@@ -409,7 +416,7 @@ abline(0,0)
 #To obtain some other plots, we can use the plot() function:
 
 plot(Supermodel.1)
-#----Obtain casewise diagnostics and add them to the original data 
+#----Obtain casewise diagnostics and add them to the original data
 Supermodel$cooks.distance<-cooks.distance(Supermodel.1)
 Supermodel$residuals<-resid(Supermodel.1)
 Supermodel$standardized.residuals <- rstandard(Supermodel.1)
@@ -437,17 +444,15 @@ Supermodel[Supermodel$large.residual,c("salary", "age", "beauty", "years", "stan
 
 #------Task 3-------------------------
 
-#-----Read in data for Glastonbury Festival Regression----
+#Read in data for Glastonbury Festival Regression
+gfr<-read.delim("data/GlastonburyFestivalRegression.dat", header=TRUE)
 
-gfr<-read.delim("GlastonburyFestivalRegression.dat", header=TRUE)
-
-#---Create three dummy variables. Make sure you don't do this if there are missing data.---
+#Create three dummy variables. Make sure you don't do this if there are missing data
 gfr$crusty<-gfr$music=="Crusty"
 gfr$metaller<-gfr$music=="Metaller"
 gfr$indie.kid<-gfr$music=="Indie Kid"
 
-#---Create a regression model---------
-
+#Create a regression model
 gfr.1 <- lm(gfr$change ~ gfr$crusty + gfr$metaller + gfr$indie.kid, data=gfr)
 summary(gfr.1)
 
@@ -455,14 +460,13 @@ summary(gfr.1)
 vif(gfr.1)
 1/vif(gfr.1)
 
-# The Durbin–Watson statistic: 
-
+# The Durbin-Watson statistic:
 dwt(gfr.1)
 
 #----Histogram-----
 hist(rstandard(gfr.1))
 
-##---Plot of the standardized residuals----- 
+##---Plot of the standardized residuals-----
 plot(gfr.1$fitted.values,rstandard(gfr.1))
 
 #---It also helps to add a horizontal line at the mean--
@@ -471,7 +475,10 @@ abline(0,0)
 #To obtain some other plots, we can use the plot() function:
 plot(gfr.1)
 
-#----Obtain casewise diagnostics and add them to the original data 
+#Obtain casewise diagnostics and add them to the original data
+#
+#this section is not working
+#
 gfr$cooks.distance<-cooks.distance(gfr.1)
 gfr$residuals<-resid(gfr.1)
 gfr$standardized.residuals<-rstandard(gfr.1)
@@ -480,12 +487,15 @@ gfr$dfbeta<-dfbeta(gfr.1)
 gfr$dffit<-dffits(gfr.1)
 gfr$leverage<-hatvalues(gfr.1)
 gfr$covariance.ratios<-covratio(gfr.1)
+#
+#
+
 
 #----List of standardized residuals greater than 2--------------
-gfr$standardized.residuals>2| gfr$standardized.residuals < -2
+gfr$standardized.residuals >2 | gfr$standardized.residuals < -2
 
 #---Create a variable called large.residual, which is TRUE (or 1) if the residual is greater than 2, or less than -2.----------
-gfr$large.residual <- gfr$standardized.residuals > 2| gfr$standardized.residuals < -2
+gfr$large.residual <- gfr$standardized.residuals > 2 | gfr$standardized.residuals < -2
 
 #---Count the number of large residuals-------------
 sum(gfr$large.residual)
@@ -497,22 +507,18 @@ gfr[,c("change", "crusty", "metaller", "indie.kid", "standardized.residuals")]
 
 gfr[gfr$large.residual,c("change", "crusty", "metaller", "indie.kid", "standardized.residuals")]
 
-#------Task 4----------
+# Task 4 ------------------------------------------------------------------
 
-#-----Read in data for Child Aggression----
+#Read in data for Child Aggression
+ChildAggression <- read.delim("data/ChildAggression.dat", header = TRUE)
 
-ChildAggression<-read.delim("ChildAggression.dat", header = TRUE)
-
-#---Conduct the analysis hierarhically entering parenting style and sibling aggression in the first step-------
-
+#Conduct the analysis hierarhically entering parenting style and sibling aggression in the first step
 ChildAggression.1<-lm(Aggression ~ Sibling_Aggression + Parenting_Style, data = ChildAggression)
 
-#------And the remaining variables in a second step-----
-
+#And the remaining variables in a second step
 ChildAggression.2<-lm(Aggression ~ Sibling_Aggression+Parenting_Style+ Diet + Computer_Games + Television, data=ChildAggression)
 
-#----View the output of the two regressions---
-
+#View the output of the two regressions
 summary(ChildAggression.1)
 summary(ChildAggression.2)
 
@@ -557,7 +563,7 @@ round(confint(ChildAggression.2), 2)
 
 plot(ChildAggression.2)
 
-#----Obtain casewise diagnostics and add them to the original data 
+#----Obtain casewise diagnostics and add them to the original data
 ChildAggression$cooks.distance<-cooks.distance(ChildAggression.2)
 ChildAggression$residuals<-resid(ChildAggression.2)
 ChildAggression$standardized.residuals <- rstandard(ChildAggression.2)
@@ -568,18 +574,26 @@ ChildAggression$leverage <- hatvalues(ChildAggression.2)
 ChildAggression$covariance.ratios <- covratio(ChildAggression.2)
 
 #----List of standardized residuals greater than 2--------------
-ChildAggression$standardized.residuals>2| ChildAggression$standardized.residuals < -2
+ChildAggression$standardized.residuals>2 | ChildAggression$standardized.residuals < -2
 
 #---Create a variable called large.residual, which is TRUE (or 1) if the residual is greater than 2, or less than -2.----------
-ChildAggression$large.residual <- ChildAggression$standardized.residuals > 2| ChildAggression$standardized.residuals < -2
+ChildAggression$large.residual <- ChildAggression$standardized.residuals > 2 |
+                                  ChildAggression$standardized.residuals < -2
 
 #---Count the number of large residuals-------------
 sum(ChildAggression$large.residual)
 
-#-----If we want to display only some of the variables we can use:----
-ChildAggression[,c("Aggression", "Sibling_Aggression","Parenting_Style","Diet","Computer_Games", "Television", "standardized.residuals")]
+#If we want to display only some of the variables, we can use
+ChildAggression[,c("Aggression", "Sibling_Aggression","Parenting_Style",
+                   "Diet","Computer_Games", "Television",
+                   "standardized.residuals")]
 
-#---Display the value of Aggression, Parenting_Style, Diet, Computer_Games and Television and the standardized residual, for those cases which have a residual greater than 2 or less than -2.-------------
+#Display the value of Aggression, Parenting_Style, Diet, Computer_Games and
+#Television and the standardized residual, for those cases which have a residual
+#greater than 2 or less than -2.
 
-ChildAggression[ChildAggression$large.residual,c("Aggression", "Sibling_Aggression","Parenting_Style","Diet","Computer_Games", "Television", "standardized.residuals")]
+ChildAggression[ChildAggression$large.residual,
+                c("Aggression", "Sibling_Aggression", "Parenting_Style",
+                  "Diet", "Computer_Games", "Television",
+                  "standardized.residuals")]
 

@@ -1,4 +1,4 @@
-Age	Gender	studentN	studentE	studentO	studentA	studentC	lectureN	lecturE	lecturO	lecturA	lecturC
+Age	Gender	studentN	studentE	studentO	studentA	studentC	lecturerN	lecturerE	lecturerO	lecturerA	lecturerC
  	Female	33	35	26	43	30	-14	 	3	6	10
  	Female	18	29	19	31	27	-17	 	4	19	9
 18	Female	35	29	30	45	26	-30	 	13	15	25
