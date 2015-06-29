@@ -380,45 +380,44 @@ boot.ci(bootResults, type = "bca", index = 1)
 
 boot.ci(bootResults, type = "bca", index = 2)
 
-#---Task 2------
 
-#load in the Supermodel.dat data
-Supermodel<-read.table("data/Supermodel.dat", header = TRUE)
+# Task 2 ------------------------------------------------------------------
+#Load in the Supermodel.dat data
+Supermodel <- read.table("data/Supermodel.dat", header = TRUE)
 names(Supermodel) <- tolower(names(Supermodel))
 
-#----create a regression model to predict salery from Age, number of years being a supermodel and beauty-----
-Supermodel.1 <- lm(salary~age + beauty + years, data= Supermodel)
+#Create a regression model to predict salery from Age, number of years being a
+#supermodel and beauty
+Supermodel.1 <- lm(salary~age + beauty + years, data = Supermodel)
 
-#--obtain output of the regression---
-
+#Obtain output of the regression
 summary(Supermodel.1)
 
-##-----obtain the standardized beta estimates:------
-
+#obtain the standardized beta estimates
 lm.beta(Supermodel.1)
 
-##---is the model valid?----
+#Is the model valid?
 vif(Supermodel.1)
 1/vif(Supermodel.1)
 dwt(Supermodel.1)
 resid(Supermodel.1)
 rstandard(Supermodel.1)
 
-#----Histogram-----
+#Histogram
 hist(rstandard(Supermodel.1))
 
-##---Plot of the standardized residuals-----
-plot(Supermodel.1$fitted.values,rstandard(Supermodel.1))
+#Plot of the standardized residuals
+plot(Supermodel.1$fitted.values, rstandard(Supermodel.1))
 
-#---It also helps to add a horizontal line at the mean--
+#It also helps to add a horizontal line at the mean
 abline(0,0)
 
 #To obtain some other plots, we can use the plot() function:
-
 plot(Supermodel.1)
+
 #----Obtain casewise diagnostics and add them to the original data
-Supermodel$cooks.distance<-cooks.distance(Supermodel.1)
-Supermodel$residuals<-resid(Supermodel.1)
+Supermodel$cooks.distance <- cooks.distance(Supermodel.1)
+Supermodel$residuals <- resid(Supermodel.1)
 Supermodel$standardized.residuals <- rstandard(Supermodel.1)
 Supermodel$studentized.residuals <- rstudent(Supermodel.1)
 Supermodel$dfbeta <- dfbeta(Supermodel.1)
@@ -426,26 +425,30 @@ Supermodel$dffit <- dffits(Supermodel.1)
 Supermodel$leverage <- hatvalues(Supermodel.1)
 Supermodel$covariance.ratios <- covratio(Supermodel.1)
 
-#----List of standardized residuals greater than 2--------------
-Supermodel$standardized.residuals>2| Supermodel$standardized.residuals < -2
+#List of standardized residuals greater than 2--------------
+Supermodel$standardized.residuals > 2 | Supermodel$standardized.residuals < -2
 
-#---Create a variable called large.residual, which is TRUE (or 1) if the residual is greater than 2, or less than -2.----------
-Supermodel$large.residual <- Supermodel$standardized.residuals > 2| Supermodel$standardized.residuals < -2
+#Create a variable called large.residual, which is TRUE (or 1) if the residual
+#is greater than 2, or less than -2.
+Supermodel$large.residual <- Supermodel$standardized.residuals > 2 |
+                             Supermodel$standardized.residuals < -2
 
-#---Count the number of large residuals-------------
+#Count the number of large residuals
 sum(Supermodel$large.residual)
 
-#-----If we want to display only some of the variables we can use:----
+#If we want to display only some of the variables, we can use:
 Supermodel[,c("salary", "age", "beauty", "years", "standardized.residuals")]
 
-#---Display the value of salary, age, beauty, years, and the standardized residual, for those cases which have a residual greater than 2 or less than -2.-------------
+#Display the value of salary, age, beauty, years, and the standardized residual,
+#for those cases which have a residual greater than 2 or less than -2.
+Supermodel[Supermodel$large.residual,
+           c("salary", "age", "beauty", "years", "standardized.residuals")]
 
-Supermodel[Supermodel$large.residual,c("salary", "age", "beauty", "years", "standardized.residuals")]
 
-#------Task 3-------------------------
-
+# Task 3 ------------------------------------------------------------------
 #Read in data for Glastonbury Festival Regression
-gfr<-read.delim("data/GlastonburyFestivalRegression.dat", header=TRUE)
+gfr <- read.delim("data/GlastonburyFestivalRegression.dat", header=TRUE)
+gfr <- na.omit(gfr)
 
 #Create three dummy variables. Make sure you don't do this if there are missing data
 gfr$crusty<-gfr$music=="Crusty"
@@ -510,7 +513,7 @@ gfr[gfr$large.residual,c("change", "crusty", "metaller", "indie.kid", "standardi
 # Task 4 ------------------------------------------------------------------
 
 #Read in data for Child Aggression
-ChildAggression <- read.delim("data/ChildAggression.dat", header = TRUE)
+ChildAggression <- read.table("data/ChildAggression.dat", header = TRUE)
 
 #Conduct the analysis hierarhically entering parenting style and sibling aggression in the first step
 ChildAggression.1<-lm(Aggression ~ Sibling_Aggression + Parenting_Style, data = ChildAggression)
