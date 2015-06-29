@@ -1,13 +1,13 @@
-#-------------------------------------------------------------------------------
+#------------------------------------------------------------------------------#
 #R Code for Chapter 5 of:
 #
-#Field, A. P., Miles, J. N. V., & Field, Z. C. (2012). Discovering Statistics
-#Using R: and Sex and Drugs and Rock 'N' Roll.
+#Discovering Statistics Using R: and Sex and Drugs and Rock 'N' Roll.
+#Field, A. P., Miles, J. N. V., & Field, Z. C. (2012).
 #
 #London Sage
 #
 #(c) 2011 Andy P. Field, Jeremy N. V. Miles & Zoe C. Field
-#-------------------------------------------------------------------------------
+#------------------------------------------------------------------------------#
 
 #-----Set and create the directories-----
 imgDir <- file.path(getwd(), 'images')
@@ -27,7 +27,7 @@ library(car)
 library(ggplot2)
 library(pastecs)
 library(psych)
-library(Rcmdr)
+#library(Rcmdr)
 
 #Read in the download data
 dlf <- read.delim("data/DownloadFestival.dat", header=TRUE)
@@ -37,10 +37,9 @@ dlf$day1 <- ifelse(dlf$day1 > 20, NA, dlf$day1)
 
 
 
-#-----Histograms for hygiene scores on day 1, day 2 and day 3-----
+# Histograms for hygiene scores on day 1, day 2 and day 3 -----------------
 
 #Histogram for day 1:
-
 hist.day1 <- ggplot(dlf, aes(day1)) +
     theme(legend.position = "none") +
     geom_histogram(aes(y=..density..), colour="black", fill="white") +
@@ -66,40 +65,37 @@ hist.day1 + stat_function(fun = dnorm,
                           args = list(mean = mean(dlf$day1, na.rm = TRUE),
                                       sd = sd(dlf$day1, na.rm = TRUE)),
                           colour = "black", size = 1)
-
-ggsave(file = paste(imgDir,"05 DLF Day 1 Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 DLF Day 1 Hist.png"))
 
 hist.day2 + stat_function(fun = dnorm,
                           args = list(mean = mean(dlf$day2, na.rm = TRUE),
                                       sd = sd(dlf$day2, na.rm = TRUE)),
                           colour = "black", size = 1)
-
-ggsave(file = paste(imgDir,"05 DLF Day 2 Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 DLF Day 2 Hist.png"))
 
 
 hist.day3 + stat_function(fun = dnorm,
                           args = list(mean = mean(dlf$day3, na.rm = TRUE),
                                       sd = sd(dlf$day3, na.rm = TRUE)),
                           colour = "black", size = 1)
-
-ggsave(file = paste(imgDir,"05 DLF Day 3 Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 DLF Day 3 Hist.png"))
 
 
 #Q-Q plot for day 1
 qqplot.day1 <- qplot(sample = dlf$day1, stat="qq")
 qqplot.day1
 
-ggsave(file = paste(imgDir,"05 DLF Day 1 QQ.png",sep="/"))
+ggsave(file.path(imgDir,"05 DLF Day 1 QQ.png"))
 
 #Q-Q plot for day 2
 qqplot.day2 <- qplot(sample = dlf$day2, stat="qq")
 qqplot.day2
-ggsave(file = paste(imgDir,"05 DLF Day 2 QQ.png",sep="/"))
+ggsave(file.path(imgDir,"05 DLF Day 2 QQ.png"))
 
 #Q-Q plot of the hygiene scores on day 3
 qqplot.day3 <- qplot(sample = dlf$day3, stat="qq")
 qqplot.day3
-ggsave(file = paste(imgDir,"05 DLF Day 3 QQ.png",sep="/"))
+ggsave(file.path(imgDir,"05 DLF Day 3 QQ.png"))
 
 #Quantifying normality with numbers
 library(psych) #load the psych library, if it haven't already, for the describe() function.
@@ -140,7 +136,7 @@ hexam <- ggplot(rexam, aes(exam)) +
                               sd = sd(rexam$exam, na.rm = TRUE)),
                   colour = "red", size = 1)
 hexam
-ggsave(file = paste(imgDir,"05 Rexam exam Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 Rexam exam Hist.png"))
 
 
 hcomputer <- ggplot(rexam, aes(computer)) +
@@ -152,7 +148,7 @@ hcomputer <- ggplot(rexam, aes(computer)) +
                               sd = sd(rexam$computer, na.rm = TRUE)),
                   colour = "red", size = 1)
 hcomputer
-ggsave(file = paste(imgDir,"05 Rexam computer Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 Rexam computer Hist.png"))
 
 hlectures <- ggplot(rexam, aes(lectures)) +
     theme(legend.position = "none") +
@@ -163,7 +159,7 @@ hlectures <- ggplot(rexam, aes(lectures)) +
                               sd = sd(rexam$lectures, na.rm = TRUE)),
                   colour = "red", size = 1)
 hlectures
-ggsave(file = paste(imgDir,"05 Rexam lectures Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 Rexam lectures Hist.png"))
 
 hnumeracy <- ggplot(rexam, aes(numeracy)) +
     theme(legend.position = "none") +
@@ -174,7 +170,7 @@ hnumeracy <- ggplot(rexam, aes(numeracy)) +
                               sd = sd(rexam$numeracy, na.rm = TRUE)),
                   colour = "red", size = 1)
 hnumeracy
-ggsave(file = paste(imgDir,"05 Rexam numeracy Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 Rexam numeracy Hist.png"))
 
 
 
@@ -208,20 +204,20 @@ sussexData<-subset(rexam, rexam$uni=="Sussex University")
 
 hist.numeracy.duncetown <- ggplot(dunceData, aes(numeracy)) + theme(legend.position = "none") + geom_histogram(aes(y = ..density..), fill = "white", colour = "black", binwidth = 1) + labs(x = "Numeracy Score", y = "Density") + stat_function(fun=dnorm, args=list(mean = mean(dunceData$numeracy, na.rm = TRUE), sd = sd(dunceData$numeracy, na.rm = TRUE)), colour = "red", size=1)
 hist.numeracy.duncetown
-ggsave(file = paste(imgDir,"05 dunce numeracy Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 dunce numeracy Hist.png"))
 
 hist.exam.duncetown <- ggplot(dunceData, aes(exam)) + theme(legend.position = "none") + geom_histogram(aes(y = ..density..), fill = "white", colour = "black") + labs(x = "First Year Exam Score", y = "Density") + stat_function(fun=dnorm, args=list(mean = mean(dunceData$exam, na.rm = TRUE), sd = sd(dunceData$exam, na.rm = TRUE)), colour = "red", size=1)
 hist.exam.duncetown
-ggsave(file = paste(imgDir,"05 dunce exam Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 dunce exam Hist.png"))
 
 
 hist.numeracy.sussex <- ggplot(sussexData, aes(numeracy)) + theme(legend.position = "none") + geom_histogram(aes(y = ..density..), fill = "white", colour = "black", binwidth = 1) + labs(x = "Numeracy Score", y = "Density") + stat_function(fun=dnorm, args=list(mean = mean(sussexData $numeracy, na.rm = TRUE), sd = sd(sussexData $numeracy, na.rm = TRUE)), colour = "red", size=1)
 hist.numeracy.sussex
-ggsave(file = paste(imgDir,"05 sussex numeracy Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 sussex numeracy Hist.png"))
 
 hist.exam.sussex <- ggplot(sussexData, aes(exam)) + theme(legend.position = "none") + geom_histogram(aes(y = ..density..), fill = "white", colour = "black") + labs(x = "First Year Exam Score", y = "Density") + stat_function(fun=dnorm, args=list(mean = mean(sussexData$exam, na.rm = TRUE), sd = sd(sussexData$exam, na.rm = TRUE)), colour = "red", size=1)
 hist.exam.sussex
-ggsave(file = paste(imgDir,"05 sussex exam Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 sussex exam Hist.png"))
 
 #self test
 dunceData<-subset(rexam, rexam$uni=="Duncetown University")
@@ -230,25 +226,25 @@ sussexData<-subset(rexam, rexam$uni=="Sussex University")
 
 hist.computer.duncetown <- ggplot(dunceData, aes(computer)) + theme(legend.position = "none") + geom_histogram(aes(y = ..density..), fill = "white", colour = "black") + labs(x = "Computer Literacy", y = "Density") + stat_function(fun=dnorm, args=list(mean = mean(dunceData$computer, na.rm = TRUE), sd = sd(dunceData$computer, na.rm = TRUE)), colour = "red", size=1)
 hist.computer.duncetown
-ggsave(file = paste(imgDir,"05 dunce computer Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 dunce computer Hist.png"))
 
 #To plot a histogram  for percentage of lectures attended for Duncetown University we would execute:
 
 hist.lectures.duncetown <- ggplot(dunceData, aes(lectures)) + theme(legend.position = "none") + geom_histogram(aes(y = ..density..), fill = "white", colour = "black") + labs(x = "Percentage of Lectures Attended", y = "Density") + stat_function(fun=dnorm, args=list(mean = mean(dunceData$lectures, na.rm = TRUE), sd = sd(dunceData$lectures, na.rm = TRUE)), colour = "red", size=1)
 hist.lectures.duncetown
-ggsave(file = paste(imgDir,"05 dunce lectures Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 dunce lectures Hist.png"))
 
 #To plot a histogram  for computer literacy for Sussex University we would execute:
 
 hist.computer.sussex <- ggplot(sussexData, aes(computer)) + theme(legend.position = "none") + geom_histogram(aes(y = ..density..), fill = "white", colour = "black") + labs(x = "Computer Literacy", y = "Density") + stat_function(fun=dnorm, args=list(mean = mean(sussexData$computer, na.rm = TRUE), sd = sd(sussexData$computer, na.rm = TRUE)), colour = "red", size=1)
 hist.computer.sussex
-ggsave(file = paste(imgDir,"05 sussex computer Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 sussex computer Hist.png"))
 
 #To plot a histogram  for percentage of lectures attended for Sussex University we would execute:
 
 hist.lectures.sussex <- ggplot(sussexData, aes(lectures)) + theme(legend.position = "none") + geom_histogram(aes(y = ..density..), fill = "white", colour = "black") + labs(x = "Percentage of Lectures Attended", y = "Density") + stat_function(fun=dnorm, args=list(mean = mean(sussexData$lectures, na.rm = TRUE), sd = sd(sussexData$lectures, na.rm = TRUE)), colour = "red", size=1)
 hist.lectures.sussex
-ggsave(file = paste(imgDir,"05 sussex lectures Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 sussex lectures Hist.png"))
 
 
 
@@ -266,9 +262,9 @@ by(rexam$numeracy, rexam$uni, shapiro.test)
 
 #qqplots for the two variables
 qplot(sample = rexam$exam, stat="qq")
-ggsave(file = paste(imgDir,"05 exam QQ.png",sep="/"))
+ggsave(file.path(imgDir,"05 exam QQ.png"))
 qplot(sample = rexam$numeracy, stat="qq")
-ggsave(file = paste(imgDir,"05 numeracy QQ.png",sep="/"))
+ggsave(file.path(imgDir,"05 numeracy QQ.png"))
 
 
 #Levene's test for comparison of variances of exam scores in the two universities.
@@ -294,7 +290,7 @@ dlf$logday3 <- log(dlf$day3 + 1)
 
 hist.logday1 <- ggplot(dlf, aes(logday1)) + theme(legend.position = "none") + geom_histogram(aes(y=..density..), colour="black", fill="white") + labs(x="Log Transformed Hygiene Score on Day 1", y = "Density") + stat_function(fun = dnorm, args = list(mean = mean(dlf$logday1, na.rm = TRUE), sd = sd(dlf$logday1, na.rm = TRUE)), colour = "red", size = 1)
 hist.logday1
-ggsave(file = paste(imgDir,"05 DLF Log Day 1 Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 DLF Log Day 1 Hist.png"))
 
 
 
@@ -302,14 +298,14 @@ ggsave(file = paste(imgDir,"05 DLF Log Day 1 Hist.png",sep="/"))
 
 hist.logday2 <- ggplot(dlf, aes(logday2)) + theme(legend.position = "none") + geom_histogram(aes(y=..density..), colour="black", fill="white") + labs(x="Log Transformed Hygiene Score on Day 2", y = "Density") + stat_function(fun = dnorm, args = list(mean = mean(dlf$logday2, na.rm = TRUE), sd = sd(dlf$logday2, na.rm = TRUE)), colour = "red", size = 1)
 hist.logday2
-ggsave(file = paste(imgDir,"05 DLF Log Day 2 Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 DLF Log Day 2 Hist.png"))
 
 
 #Histogram for logday3:
 
 hist.logday3 <- ggplot(dlf, aes(logday3)) + theme(legend.position = "none") + geom_histogram(aes(y=..density..), colour="black", fill="white") + labs(x="Log Transformed Hygiene Score on Day 3", y = "Density") + stat_function(fun = dnorm, args = list(mean = mean(dlf$logday3, na.rm = TRUE), sd = sd(dlf$logday3, na.rm = TRUE)), colour = "red", size = 1)
 hist.logday3
-ggsave(file = paste(imgDir,"05 DLF Log Day 3 Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 DLF Log Day 3 Hist.png"))
 
 #Create square root scores
 
@@ -323,7 +319,7 @@ dlf$sqrtday3 <- sqrt(dlf$day3)
 
 hist.sqrtday1 <- ggplot(dlf, aes(sqrtday1)) + theme(legend.position = "none") + geom_histogram(aes(y=..density..), colour="black", fill="white") + labs(x="Square Root of Hygiene Score on Day 1", y = "Density") + stat_function(fun = dnorm, args = list(mean = mean(dlf$sqrtday1, na.rm = TRUE), sd = sd(dlf$sqrtday1, na.rm = TRUE)), colour = "red", size = 1)
 hist.sqrtday1
-ggsave(file = paste(imgDir,"05 DLF sqrt Day 1 Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 DLF sqrt Day 1 Hist.png"))
 
 
 
@@ -331,7 +327,7 @@ ggsave(file = paste(imgDir,"05 DLF sqrt Day 1 Hist.png",sep="/"))
 
 hist.sqrtday2 <- ggplot(dlf, aes(sqrtday2)) + theme(legend.position = "none") + geom_histogram(aes(y=..density..), colour="black", fill="white") + labs(x="Square Root of Hygiene Score on Day 2", y = "Density") + stat_function(fun = dnorm, args = list(mean = mean(dlf$sqrtday2, na.rm = TRUE), sd = sd(dlf$sqrtday2, na.rm = TRUE)), colour = "red", size = 1)
 hist.sqrtday2
-ggsave(file = paste(imgDir,"05 DLF sqrt Day 2 Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 DLF sqrt Day 2 Hist.png"))
 
 
 
@@ -339,7 +335,7 @@ ggsave(file = paste(imgDir,"05 DLF sqrt Day 2 Hist.png",sep="/"))
 
 hist.sqrtday3 <- ggplot(dlf, aes(sqrtday3)) + theme(legend.position = "none") + geom_histogram(aes(y=..density..), colour="black", fill="white") + labs(x="Square Root of Hygiene Score on Day 2", y = "Density") + stat_function(fun = dnorm, args = list(mean = mean(dlf$sqrtday3, na.rm = TRUE), sd = sd(dlf$sqrtday3, na.rm = TRUE)), colour = "red", size = 1)
 hist.sqrtday3
-ggsave(file = paste(imgDir,"05 DLF sqrt Day 3 Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 DLF sqrt Day 3 Hist.png"))
 
 
 #Create reciprocal scores
@@ -354,7 +350,7 @@ dlf$recday3 <- 1/(dlf$day3 + 1)
 
 hist.recday1 <- ggplot(dlf, aes(recday1)) + theme(legend.position = "none") + geom_histogram(aes(y=..density..), colour="black", fill="white") + labs(x="Reciprocal of of Hygiene Score on Day 1", y = "Density") + stat_function(fun = dnorm, args = list(mean = mean(dlf$recday1, na.rm = TRUE), sd = sd(dlf$recday1, na.rm = TRUE)), colour = "red", size = 1)
 hist.recday1
-ggsave(file = paste(imgDir,"05 DLF rec Day 1 Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 DLF rec Day 1 Hist.png"))
 
 
 
@@ -362,7 +358,7 @@ ggsave(file = paste(imgDir,"05 DLF rec Day 1 Hist.png",sep="/"))
 
 hist.recday2 <- ggplot(dlf, aes(recday2)) + theme(legend.position = "none") + geom_histogram(aes(y=..density..), colour="black", fill="white") + labs(x="Reciprocal of of Hygiene Score on Day 2", y = "Density") + stat_function(fun = dnorm, args = list(mean = mean(dlf$recday2, na.rm = TRUE), sd = sd(dlf$recday2, na.rm = TRUE)), colour = "red", size = 1)
 hist.recday2
-ggsave(file = paste(imgDir,"05 DLF rec Day 2 Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 DLF rec Day 2 Hist.png"))
 
 
 #Histogram for recday3:
@@ -370,7 +366,7 @@ ggsave(file = paste(imgDir,"05 DLF rec Day 2 Hist.png",sep="/"))
 
 hist.recday3 <- ggplot(dlf, aes(recday3)) + theme(legend.position = "none") + geom_histogram(aes(y=..density..), colour="black", fill="white") + labs(x="Reciprocal of of Hygiene Score on Day 3", y = "Density") + stat_function(fun = dnorm, args = list(mean = mean(dlf$recday3, na.rm = TRUE), sd = sd(dlf$recday3, na.rm = TRUE)), colour = "red", size = 1)
 hist.recday3
-ggsave(file = paste(imgDir,"05 DLF rec Day 3 Hist.png",sep="/"))
+ggsave(file.path(imgDir,"05 DLF rec Day 3 Hist.png"))
 
 
 #Ifelse

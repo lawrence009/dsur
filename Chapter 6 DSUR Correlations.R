@@ -1,13 +1,13 @@
-#-------------------------------------------------------------------------------
+#------------------------------------------------------------------------------#
 #R Code for Chapter 6 of:
 #
-#Field, A. P., Miles, J. N. V., & Field, Z. C. (2012). Discovering Statistics
-#Using R: and Sex and Drugs and Rock 'N' Roll.
+#Discovering Statistics Using R: and Sex and Drugs and Rock 'N' Roll.
+#Field, A. P., Miles, J. N. V., & Field, Z. C. (2012).
 #
 #London Sage
 #
 #(c) 2011 Andy P. Field, Jeremy N. V. Miles & Zoe C. Field
-#-------------------------------------------------------------------------------
+#------------------------------------------------------------------------------#
 
 #-----Set and create the directories-----
 imgDir <- file.path(getwd(), 'images')

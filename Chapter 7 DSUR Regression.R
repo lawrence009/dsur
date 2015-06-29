@@ -1,14 +1,16 @@
-#-------------------------------------------------------------------------------
+#------------------------------------------------------------------------------#
 #R Code for Chapter 7 of:
 #
-#Field, A. P. & Miles, J. N. V. (2012). Discovering Statistics Using R: and Sex
-#and Drugs and Rock 'N' Roll. London Sage
+#Discovering Statistics Using R: and Sex and Drugs and Rock 'N' Roll.
+#Field, A. P., Miles, J. N. V., & Field, Z. C. (2012).
+#
+#London Sage
 #
 #(c) 2011 Andy P. Field & Jeremy N. V. Miles
-#-------------------------------------------------------------------------------
+#------------------------------------------------------------------------------#
 
 
-#-----Set and create the directories-----
+#Set and create the directories
 imgDir <- file.path(getwd(), 'images')
 
 if (!dir.exists(imgDir)) {
@@ -16,7 +18,7 @@ if (!dir.exists(imgDir)) {
 }
 
 
-#-----Install and Load Packages------
+#Install and Load Packages
 # install.packages("QuantPsyc")
 # install.packages("car")
 
@@ -37,14 +39,13 @@ rstudent(pubReg)
 
 PearsonResidual <- (resid(pubReg)-mean(resid(pubReg)))/sd(resid(pubReg))
 
-#----run the simple linear regression model---
+#Run the simple linear regression model
 album1 <- read.delim("data/Album Sales 1.dat", header = TRUE)
 albumSales.1 <- lm(sales ~ adverts, data = album1)
 summary(albumSales.1)
 sqrt(0.3346)
 
-
-#---Run the multiple regression model----
+#Run the multiple regression model
 album2 <- read.delim("data/Album Sales 2.dat", header = TRUE)
 albumSales.2 <- lm(sales ~ adverts, data = album2)
 albumSales.3 <- lm(sales ~ adverts + airplay + attract, data = album2)
@@ -120,7 +121,6 @@ abline(0, 0)
 plot(albumSales.3)
 
 #Publication quality graphs
-
 album2$fitted <- albumSales.3$fitted.values
 
 histogram <- ggplot(album2, aes(studentized.residuals)) +
@@ -160,19 +160,21 @@ bootReg <- function(formula, data, i){
     return(coef(fit))
 }
 
-#----bootstrapping our regression model, with 2000 replications---
+#bootstrapping our regression model, with 2000 replications
 bootResults <- boot(statistic = bootReg,
                     formula = sales ~ adverts + airplay + attract,
                     data = album2,
                     R = 2000)
 
-#---We can then obtaine the bootstrap confidence intervals for the intercept:---
+#We can then obtaine the bootstrap confidence intervals for the intercept:
 boot.ci(bootResults, type = "bca", index = 1)
 
-#---And the three slope estimates---
+#And the three slope estimates
 boot.ci(bootResults, type = "bca", index = 2)
 boot.ci(bootResults, type = "bca", index = 3)
 boot.ci(bootResults, type = "bca", index = 4)
+
+
 
 #-----Read in data for Glastonbury Festival Regression----
 gfr <- read.delim(file="data/GlastonburyFestivalRegression.dat", header = TRUE)
@@ -199,13 +201,12 @@ summary(glastonburyModel)
 round(tapply(gfr$change, gfr$music, mean, na.rm=TRUE), 3)
 
 
-#********************Labcoat Leni*******************************
-
+# Labcoat Leni ------------------------------------------------------------
 #Load data & set gender to be a factor
-
 PersonalityData <- read.delim("data/Chamorro-Premuzic.dat", header = TRUE)
 #PersonalityData$Gender <- factor(PersonalityData$Gender, levels = c(0:1),
 #                                 labels = c("Female", "Male"))
+
 
 #Create dataframes containing variables for each analysis (need to do this
 #because of missing values). Drop variables not in analysis
@@ -225,11 +226,11 @@ dropVars<-names(PersonalityData) %in% c("lecturerE","lecturerO", "lecturerA", "l
 concLecturer<-PersonalityData[!dropVars]
 
 #Delete cases with any missing values on any variable
-neuroticLecturer <-neuroticLecturer[complete.cases(neuroticLecturer),]
-extroLecturer <-extroLecturer[complete.cases(extroLecturer),]
-openLecturer <-openLecturer[complete.cases(openLecturer),]
-agreeLecturer <-agreeLecturer[complete.cases(agreeLecturer),]
-concLecturer <-concLecturer[complete.cases(concLecturer),]
+neuroticLecturer <- neuroticLecturer[complete.cases(neuroticLecturer),]
+extroLecturer <- extroLecturer[complete.cases(extroLecturer),]
+openLecturer <- openLecturer[complete.cases(openLecturer),]
+agreeLecturer <- agreeLecturer[complete.cases(agreeLecturer),]
+concLecturer <- concLecturer[complete.cases(concLecturer),]
 
 # Neurotic Lecturer -------------------------------------------------------
 #Create two models
@@ -260,29 +261,33 @@ lm.beta(LecturerN.1)
 lm.beta(LecturerN.2)
 
 #-----Extroverted Lecturer-----------
-#----Create two models-------
+#Create two models
 LecturerE.1 <- lm(lecturerE ~ Age + Gender, data=extroLecturer)
 LecturerE.2 <- lm(lecturerE ~ Age + Gender + studentN + studentE + studentO + studentA + studentC, data= extroLecturer)
-#-----Run an anova to compare the two models------
+
+#Run an anova to compare the two models
 anova(LecturerE.1, LecturerE.2)
-#-----To obtain output----
+
+#To obtain output
 summary(LecturerE.1)
 summary(LecturerE.2)
-#----Statistics------
+
+#Statistics
 vif(LecturerE.2)
 dwt(LecturerE.2)
 
-#---Histogram-----
+#Histogram
 hist(rstudent(LecturerE.2))
 
-#-----Confidence intervals-----
+#Confidence intervals
 confint(LecturerE.2)
 
-##-----obtain the standardized beta estimates:------
+#Obtain the standardized beta estimates:
 # install.packages("QuantPsyc")
 # library(QuantPsyc)
 lm.beta(LecturerE.1)
 lm.beta(LecturerE.2)
+
 #-----Openness to Experience Lecturer-----------
 #----Create two models-------
 LecturerO.1 <- lm(lecturerO ~ Age + Gender, data=openLecturer)
