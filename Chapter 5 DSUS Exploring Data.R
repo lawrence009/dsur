@@ -9,14 +9,14 @@
 #(c) 2011 Andy P. Field, Jeremy N. V. Miles & Zoe C. Field
 #------------------------------------------------------------------------------#
 
-#-----Set and create the directories-----
+#Set and create the image directory for saving graphic output
 imgDir <- file.path(getwd(), 'images')
 
 if (!dir.exists(imgDir)) {
     dir.create(imgDir)
 }
 
-#-----Install and Load Packages------
+#Install and Load Packages
 # install.packages("car")
 # install.packages("ggplot2")
 # install.packages("pastecs")
