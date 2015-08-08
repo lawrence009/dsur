@@ -46,12 +46,13 @@ if(!exists('yob')){
     yob$year <- as.ordered(yob$year)
 }
 
-x <- filter(yob, grepl('Margaret$', name), sex=='F') %>% select(year, occurrence)
+n <- 'Margaret'; s <- 'F'; birthYear <- 1999
+x <- filter(yob, grepl(paste0(n,'$'), name), sex==s) %>% select(year, occurrence)
 x$year <- as.integer(as.character(x$year))
 with(x, plot(year, occurrence, type='l',
              xlab='Birth Year',
-             ylab='No. of Babies named Margaret',
-             main='Hello, Margaret.'))
-points(subset(x, year==1988), col='blue', pch=19, cex=2)
+             ylab=paste('No. of Babies named', n),
+             main=paste0('Hello, ', n, '.')))
+points(subset(x, year==birthYear), col='blue', pch=19, cex=2)
 points(subset(x, occurrence==max(occurrence)), col='red', cex=2)
 
